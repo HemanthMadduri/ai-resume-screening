@@ -1,0 +1,26 @@
+Job Title: Machine Learning & NLP Specialist
+Location: New York, NY / Remote
+Experience Required: 3+ years of experience in ML / Data Science
+Education: Master's degree or Bachelor's in Computer Science, Data Science, or AI
+
+Job Overview:
+We are seeking an experienced Machine Learning & NLP Engineer to lead the development of our intelligent text extraction, classification, and ranking systems.
+
+Required Skills:
+- Python, PyTorch or TensorFlow, scikit-learn
+- Natural Language Processing (NLP), spaCy, Hugging Face, Transformers
+- Machine Learning algorithms, Data Analysis, Pandas, NumPy
+- REST API development using FastAPI or Flask
+- Docker, Git, Linux
+
+Preferred Skills:
+- LLMs, Generative AI, Computer Vision (OpenCV)
+- AWS or Google Cloud Platform (GCP)
+- MLflow, MLOps, Apache Spark
+- DeepLearning.AI Specialization or relevant ML certifications
+
+Key Responsibilities:
+- Design and deploy state-of-the-art NLP and transformer models.
+- Build automated data processing pipelines with Pandas and PyTorch.
+- Deploy scalable ML inference APIs using FastAPI and Docker.
+- Collaborate with software engineers to integrate AI models into production.

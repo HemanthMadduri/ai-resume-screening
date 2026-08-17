@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard & Upload - TalentAI ATS{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Page Title & Header Actions -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">ATS Recruiter Dashboard</h1>
+            <p class="page-subtitle">Configure Job Requirements, upload candidate resumes in bulk, and run local AI-driven screening.</p>
+        </div>
+        <div class="page-header-actions">
+            <button type="button" class="btn btn-primary" id="btn-analyze-main">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                <span>Screen & Rank Candidates</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistics Cards Grid -->
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper blue">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </div>
+            <div class="stat-content">
+                <span class="stat-label">Total Candidates</span>
+                <h3 class="stat-value" id="stat-total-candidates">{{ stats.total_candidates }}</h3>
+                <span class="stat-hint">Uploaded resumes in pool</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon-wrapper purple">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+            </div>
+            <div class="stat-content">
+                <span class="stat-label">Screened & Ranked</span>
+                <h3 class="stat-value" id="stat-screened-candidates">{{ stats.screened_candidates }}</h3>
+                <span class="stat-hint">Processed against active JD</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon-wrapper emerald">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                    <path d="M4 22h16"></path>
+                    <path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-2.34"></path>
+                    <path d="M18 14.66V17c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-2.34"></path>
+                    <path d="M12 2v20"></path>
+                </svg>
+            </div>
+            <div class="stat-content">
+                <span class="stat-label">Top Match Score</span>
+                <h3 class="stat-value" id="stat-top-match">{{ stats.top_match_score }}%</h3>
+                <span class="stat-hint">Highest qualification rank</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon-wrapper indigo">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M16 12l-4-4-4 4"></path>
+                    <path d="M12 16V8"></path>
+                </svg>
+            </div>
+            <div class="stat-content">
+                <span class="stat-label">Average Match Score</span>
+                <h3 class="stat-value" id="stat-avg-score">{{ stats.avg_match_score }}%</h3>
+                <span class="stat-hint">Pool average match</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon-wrapper amber">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+            </div>
+            <div class="stat-content">
+                <span class="stat-label">Shortlisted</span>
+                <h3 class="stat-value" id="stat-shortlisted">{{ stats.shortlisted_count }}</h3>
+                <span class="stat-hint">Flagged for interview</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Dual Panel Workflow (Job Description + Resume Uploader) -->
+    <div class="dashboard-workflow-grid">
+        <!-- Left Panel: Job Description Configuration -->
+        <section class="card panel-jd">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                    <h3>1. Target Job Description (JD)</h3>
+                </div>
+                <div class="jd-quick-actions">
+                    <select id="select-sample-jd" class="form-select form-select-sm">
+                        <option value="">-- Load Sample JD --</option>
+                        <option value="senior_fullstack_engineer">Senior Full Stack Engineer (Python/React)</option>
+                        <option value="machine_learning_engineer">Machine Learning & NLP Specialist</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="jd-role-title">Job Role / Title (Optional):</label>
+                    <input type="text" id="jd-role-title" class="form-input" placeholder="e.g. Senior Full Stack Engineer" value="{{ jd.title if jd else '' }}">
+                </div>
+
+                <div class="form-group">
+                    <div class="label-with-action">
+                        <label for="jd-text-input">Job Description Details & Requirements:</label>
+                        <label for="jd-file-upload" class="upload-link-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Upload .txt JD
+                        </label>
+                        <input type="file" id="jd-file-upload" accept=".txt" style="display: none;">
+                    </div>
+                    <textarea id="jd-text-input" class="form-textarea" rows="12" placeholder="Paste full Job Description here, including required technical skills, minimum years of experience, and educational qualifications...">{{ jd.raw_text if jd else '' }}</textarea>
+                </div>
+
+                <!-- Live Extracted JD Summary -->
+                <div class="jd-analysis-preview" id="jd-analysis-preview" {% if not jd %}style="display: none;"{% endif %}>
+                    <h4 class="preview-title">Detected Requirements</h4>
+                    <div class="req-tags-row">
+                        <div class="req-tag-item">
+                            <span class="req-tag-label">Min Experience:</span>
+                            <span class="req-tag-val" id="jd-preview-exp">{{ jd.min_experience_years if jd else 0 }} yrs</span>
+                        </div>
+                        <div class="req-tag-item">
+                            <span class="req-tag-label">Required Education:</span>
+                            <span class="req-tag-val" id="jd-preview-edu">{{ jd.required_education if jd else "Bachelor's" }}</span>
+                        </div>
+                    </div>
+                    <div class="req-skills-block mt-2">
+                        <span class="req-tag-label">Required Skills:</span>
+                        <div class="skill-chips-container mt-1" id="jd-preview-skills">
+                            {% if jd and jd.required_skills %}
+                                {% for skill in jd.required_skills %}
+                                    <span class="skill-chip required">{{ skill }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Panel: Bulk Resume Upload Area -->
+        <section class="card panel-resumes">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <h3>2. Bulk Resume Upload</h3>
+                </div>
+                <div class="header-badges">
+                    <span class="badge badge-outline">PDF</span>
+                    <span class="badge badge-outline">DOCX</span>
+                    <span class="badge badge-outline">TXT</span>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <!-- Drag and Drop Dropzone -->
+                <div class="dropzone" id="resume-dropzone">
+                    <input type="file" id="resume-file-input" multiple accept=".pdf,.docx,.doc,.txt" style="display: none;">
+                    <div class="dropzone-inner">
+                        <div class="dropzone-icon-circle">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="12" y1="18" x2="12" y2="12"></line>
+                                <line x1="9" y1="15" x2="15" y2="15"></line>
+                            </svg>
+                        </div>
+                        <h4 class="dropzone-title">Drag & drop candidate resumes here</h4>
+                        <p class="dropzone-subtitle">Supports single or bulk uploads of 10–100+ files (.PDF, .DOCX, .TXT)</p>
+                        <button type="button" class="btn btn-secondary btn-sm mt-2" id="btn-browse-files">Browse Files</button>
+                    </div>
+                </div>
+
+                <!-- Upload Progress Tracker -->
+                <div class="upload-progress-card" id="upload-progress-container" style="display: none;">
+                    <div class="progress-info">
+                        <span class="progress-title" id="progress-status-text">Processing resumes...</span>
+                        <span class="progress-percentage" id="progress-percent-text">0%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progress-fill-bar" style="width: 0%;"></div>
+                    </div>
+                    <span class="progress-count" id="progress-count-text">0 / 0 resumes processed</span>
+                </div>
+
+                <!-- Queued Uploads List -->
+                <div class="queued-files-header mt-3">
+                    <h4>Current Resume Pool (<span id="queued-count">{{ candidates|length }}</span> files)</h4>
+                    <button type="button" class="btn btn-ghost btn-xs text-danger" id="btn-clear-queue">Clear Pool</button>
+                </div>
+
+                <div class="queued-files-list" id="queued-files-list">
+                    {% if candidates %}
+                        {% for cand in candidates %}
+                            <div class="queue-item" data-id="{{ cand.id }}">
+                                <div class="queue-item-left">
+                                    <span class="file-type-badge {{ cand.file_type }}">{{ cand.file_type|upper }}</span>
+                                    <div class="queue-file-info">
+                                        <span class="queue-filename">{{ cand.filename }}</span>
+                                        <span class="queue-meta">{{ cand.name }} &bull; {{ cand.skills|length }} skills detected</span>
+                                    </div>
+                                </div>
+                                <div class="queue-item-right">
+                                    {% if cand.score_breakdown.overall_score > 0 %}
+                                        <span class="score-badge mini {{ 'score-high' if cand.score_breakdown.overall_score >= 80 else ('score-mid' if cand.score_breakdown.overall_score >= 60 else 'score-low') }}">
+                                            {{ cand.score_breakdown.overall_score }}%
+                                        </span>
+                                    {% endif %}
+                                    <button type="button" class="btn-inspect-queue" onclick="openCandidateModal('{{ cand.id }}')" title="Inspect Candidate">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-queue-state" id="empty-queue-msg">
+                            <p>No resumes uploaded yet. Drag files into the box above or load demo candidates to get started.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Execution Button -->
+                <div class="action-footer mt-3">
+                    <button type="button" class="btn btn-primary btn-block btn-lg" id="btn-start-ranking">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                        <span>Analyze & Rank Candidates</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

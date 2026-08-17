@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Candidate Rankings & Screening Results - TalentAI ATS{% endblock %}
+
+{% block content %}
+<div class="results-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Candidate Rankings & NLP Screening</h1>
+            <p class="page-subtitle">
+                Target Role: <strong>{{ jd.title if jd else "No Job Role Selected" }}</strong> &bull;
+                <span id="results-count-summary">{{ candidates|length }} candidates ranked</span>
+            </p>
+        </div>
+        <div class="page-header-actions">
+            <a href="/dashboard" class="btn btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Upload More Resumes</span>
+            </a>
+            <div class="dropdown-wrapper">
+                <a href="/api/export?format=csv" class="btn btn-primary" id="btn-export-csv-results">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Export Rankings (CSV)</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters & Search Toolbar Card -->
+    <section class="card filter-toolbar-card">
+        <div class="filter-toolbar-grid">
+            <!-- Search Box -->
+            <div class="filter-item search-box-item">
+                <label for="filter-search-input">Search Candidates</label>
+                <div class="search-input-wrapper">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="filter-search-input" class="form-input" placeholder="Search by name, email, skill, company...">
+                </div>
+            </div>
+
+            <!-- Minimum Score Slider -->
+            <div class="filter-item score-slider-item">
+                <div class="slider-label-row">
+                    <label for="filter-min-score">Min Overall Score:</label>
+                    <span class="slider-value-badge" id="filter-min-score-val">0%</span>
+                </div>
+                <input type="range" id="filter-min-score" min="0" max="100" value="0" class="form-range">
+            </div>
+
+            <!-- Recommendation Filter -->
+            <div class="filter-item">
+                <label for="filter-recommendation">Recommendation</label>
+                <select id="filter-recommendation" class="form-select">
+                    <option value="ALL">All Recommendations</option>
+                    <option value="Excellent Match">Excellent Match (85%+)</option>
+                    <option value="Strong Match">Strong Match (75-84%)</option>
+                    <option value="Good Fit / Consider">Good Fit / Consider (60-74%)</option>
+                    <option value="Moderate / Weak Match">Moderate / Weak (45-59%)</option>
+                    <option value="Low Match">Low Match (&lt;45%)</option>
+                </select>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="filter-item">
+                <label for="filter-status">Recruiter Status</label>
+                <select id="filter-status" class="form-select">
+                    <option value="ALL">All Statuses</option>
+                    <option value="New">New</option>
+                    <option value="Screening">Screening</option>
+                    <option value="Shortlisted">Shortlisted</option>
+                    <option value="Interview">Interview</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Hired">Hired</option>
+                </select>
+            </div>
+
+            <!-- Sort Selector -->
+            <div class="filter-item">
+                <label for="filter-sort-by">Sort Candidates</label>
+                <select id="filter-sort-by" class="form-select">
+                    <option value="score_desc">Highest Score (Default)</option>
+                    <option value="score_asc">Lowest Score</option>
+                    <option value="name_asc">Candidate Name (A-Z)</option>
+                    <option value="exp_desc">Experience (Years)</option>
+                    <option value="skills_desc">Most Skills Matched</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="filter-toolbar-footer">
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="filter-shortlisted-only">
+                    <span>Show Shortlisted Candidates Only (★)</span>
+                </label>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-reset-filters">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <polyline points="23 20 23 14 17 14"></polyline>
+                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                </svg>
+                <span>Reset Filters</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Rankings Table Card -->
+    <section class="card table-card">
+        <div class="table-responsive">
+            <table class="candidates-table" id="candidates-table">
+                <thead>
+                    <tr>
+                        <th class="th-rank">Rank</th>
+                        <th class="th-candidate">Candidate Profile</th>
+                        <th class="th-score">Overall Score</th>
+                        <th class="th-metric">Skills Match</th>
+                        <th class="th-metric">Experience</th>
+                        <th class="th-metric">Education</th>
+                        <th class="th-metric">JD Similarity</th>
+                        <th class="th-recommendation">Recommendation</th>
+                        <th class="th-status">Status</th>
+                        <th class="th-actions">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="candidates-tbody">
+                    <!-- Populated dynamically via JS state manager -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty Results Message -->
+        <div class="empty-state-container" id="empty-results-state" style="display: none;">
+            <div class="empty-icon-circle">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </div>
+            <h3>No matching candidates found</h3>
+            <p>Try broadening your search query, lowering the minimum match score, or resetting filters.</p>
+            <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="resetAllFilters()">Reset All Filters</button>
+        </div>
+    </section>
+</div>
+{% endblock %}

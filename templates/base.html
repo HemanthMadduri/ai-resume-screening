@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TalentAI ATS - Intelligent Resume Screening & Ranking{% endblock %}</title>
+    <meta name="description" content="AI-Powered ATS resume screening, candidate ranking, skill matching, and explainable hiring intelligence platform.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Vanilla CSS Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-logo">
+                    <div class="brand-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="brand-text">
+                        <span class="brand-title">TalentAI</span>
+                        <span class="brand-badge">ATS 2.0</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">CORE WORKFLOW</div>
+                <a href="{{ url_for('dashboard') }}" class="nav-item {% if request.path == '/' or request.path == '/dashboard' %}active{% endif %}" id="nav-dashboard">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span>Dashboard & Upload</span>
+                </a>
+                <a href="{{ url_for('results') }}" class="nav-item {% if request.path == '/results' %}active{% endif %}" id="nav-results">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    <span>Candidate Rankings</span>
+                    <span class="nav-counter" id="nav-candidate-count">{{ stats.total_candidates if stats else 0 }}</span>
+                </a>
+
+                <div class="nav-section-label">INTELLIGENCE</div>
+                <button type="button" class="nav-item" id="btn-show-weights">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    <span>Scoring Weights</span>
+                </button>
+                <button type="button" class="nav-item" id="btn-show-fairness">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    <span>Ethical AI Safeguards</span>
+                </button>
+
+                <div class="nav-section-label">DATA & EXPORT</div>
+                <div class="sidebar-export-buttons">
+                    <a href="/api/export?format=csv" class="btn btn-outline btn-sm btn-block" id="btn-export-csv">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Export CSV</span>
+                    </a>
+                    <a href="/api/export?format=json" class="btn btn-outline btn-sm btn-block" id="btn-export-json">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Export JSON</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="system-status">
+                    <span class="status-dot online"></span>
+                    <span class="status-text">Local NLP Engine Ready</span>
+                </div>
+                <button type="button" class="btn btn-ghost btn-xs btn-block text-danger mt-2" id="btn-reset-session">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="1 4 1 10 7 10"></polyline>
+                        <polyline points="23 20 23 14 17 14"></polyline>
+                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                    </svg>
+                    <span>Clear & Reset All</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <div class="main-wrapper">
+            <!-- Top Navigation Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button type="button" class="sidebar-toggle" id="btn-toggle-sidebar" aria-label="Toggle Sidebar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <div class="active-job-indicator">
+                        <span class="indicator-label">Active Target Role:</span>
+                        <span class="indicator-value" id="topbar-job-title">
+                            {% if jd and jd.title %}
+                                {{ jd.title }}
+                            {% else %}
+                                <i>No Job Description Configured</i>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-load-demo-topbar">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <span>Load Demo Data</span>
+                    </button>
+                    
+                    <!-- Theme Toggle -->
+                    <button type="button" class="theme-toggle-btn" id="btn-theme-toggle" aria-label="Toggle Dark/Light Mode" title="Toggle Dark/Light Mode">
+                        <span class="sun-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="5"></circle>
+                                <line x1="12" y1="1" x2="12" y2="3"></line>
+                                <line x1="12" y1="21" x2="12" y2="23"></line>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                <line x1="1" y1="12" x2="3" y2="12"></line>
+                                <line x1="21" y1="12" x2="23" y2="12"></line>
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                            </svg>
+                        </span>
+                        <span class="moon-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Main Content Block -->
+            <main class="content-area">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- ------------------------------------------------------------- -->
+    <!-- GLOBAL MODALS & DIALOGS -->
+    <!-- ------------------------------------------------------------- -->
+
+    <!-- Candidate Detailed Profile Modal -->
+    <div class="modal-backdrop" id="candidate-modal" aria-hidden="true">
+        <div class="modal-card modal-lg">
+            <div class="modal-header">
+                <div class="candidate-header-left">
+                    <div class="candidate-avatar-large" id="modal-avatar">RS</div>
+                    <div>
+                        <h2 class="modal-candidate-name" id="modal-candidate-name">Rahul Sharma</h2>
+                        <div class="candidate-meta-row" id="modal-candidate-meta">
+                            <span>📧 rahul@example.com</span>
+                            <span>📱 +1 555-0142</span>
+                            <span>📍 San Francisco, CA</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="candidate-header-right">
+                    <div class="overall-score-pill" id="modal-score-pill">
+                        <span class="score-value" id="modal-overall-score">92%</span>
+                        <span class="score-label" id="modal-recommendation">Excellent Match</span>
+                    </div>
+                    <button type="button" class="modal-close-btn" id="modal-close-candidate" aria-label="Close modal">&times;</button>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <!-- Score Breakdown Progress Bars -->
+                <section class="profile-section">
+                    <h3 class="section-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        Transparent Match Score Breakdown
+                    </h3>
+                    <div class="score-breakdown-grid" id="modal-score-breakdown">
+                        <!-- Populated dynamically by JS -->
+                    </div>
+                </section>
+
+                <!-- Explainability Card -->
+                <section class="profile-section">
+                    <div class="explainability-box">
+                        <div class="explain-header">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            <h4>AI & NLP Decision Explainability</h4>
+                        </div>
+                        <div class="explain-columns">
+                            <div class="explain-col positive">
+                                <h5>Why this candidate scored highly:</h5>
+                                <ul class="explain-list" id="modal-why-ranked">
+                                    <li>Matches 8 of 8 core technical requirements.</li>
+                                </ul>
+                            </div>
+                            <div class="explain-col negative">
+                                <h5>Identified gaps & areas to verify:</h5>
+                                <ul class="explain-list" id="modal-potential-gaps">
+                                    <li>No specific gaps identified.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Skills Match Matrix -->
+                <section class="profile-section">
+                    <h3 class="section-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        Skills Analysis Matrix
+                    </h3>
+                    <div class="skills-matrix-grid">
+                        <div class="skill-category-card">
+                            <h4 class="skill-cat-title success">
+                                <span class="badge badge-success">✓</span> Matched Required Skills (<span id="modal-matched-count">0</span>)
+                            </h4>
+                            <div class="skill-chips-container" id="modal-matched-skills"></div>
+                        </div>
+                        <div class="skill-category-card">
+                            <h4 class="skill-cat-title danger">
+                                <span class="badge badge-danger">✗</span> Missing Required Skills (<span id="modal-missing-count">0</span>)
+                            </h4>
+                            <div class="skill-chips-container" id="modal-missing-skills"></div>
+                        </div>
+                        <div class="skill-category-card">
+                            <h4 class="skill-cat-title info">
+                                <span class="badge badge-info">★</span> Matched Preferred / Bonus Skills
+                            </h4>
+                            <div class="skill-chips-container" id="modal-preferred-skills"></div>
+                        </div>
+                        <div class="skill-category-card">
+                            <h4 class="skill-cat-title secondary">
+                                All Detected Skills (<span id="modal-all-skills-count">0</span>)
+                            </h4>
+                            <div class="skill-chips-container" id="modal-all-skills"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Work Experience & Education Details -->
+                <div class="modal-two-column">
+                    <section class="profile-section">
+                        <h3 class="section-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                            Work Experience (<span id="modal-exp-summary">0 yrs</span>)
+                        </h3>
+                        <div class="experience-timeline" id="modal-exp-timeline">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </section>
+
+                    <section class="profile-section">
+                        <h3 class="section-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                            Education & Certifications
+                        </h3>
+                        <div class="education-block" id="modal-education-block"></div>
+                        <div class="certs-block mt-3" id="modal-certs-block"></div>
+                    </section>
+                </div>
+
+                <!-- Recruiter Workflow & Notes -->
+                <section class="profile-section recruiter-notes-section">
+                    <h3 class="section-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        Recruiter Action & Feedback Notes
+                    </h3>
+                    <div class="recruiter-controls-row">
+                        <div class="control-group">
+                            <label for="modal-candidate-status">Candidate Status:</label>
+                            <select id="modal-candidate-status" class="form-select">
+                                <option value="New">New</option>
+                                <option value="Screening">Screening</option>
+                                <option value="Shortlisted">Shortlisted</option>
+                                <option value="Interview">Interview</option>
+                                <option value="Rejected">Rejected</option>
+                                <option value="Hired">Hired</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-outline" id="modal-btn-shortlist">
+                            <span id="modal-shortlist-star">☆</span> <span id="modal-shortlist-text">Shortlist Candidate</span>
+                        </button>
+                        <a href="#" target="_blank" class="btn btn-secondary" id="modal-btn-download-resume">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            View Original Resume
+                        </a>
+                    </div>
+                    <div class="mt-3">
+                        <textarea id="modal-candidate-notes" class="form-textarea" placeholder="Add recruiter evaluation notes, interview notes, or interview feedback here..." rows="3"></textarea>
+                        <div class="notes-footer">
+                            <span class="notes-status-msg" id="modal-notes-status">Auto-saved</span>
+                            <button type="button" class="btn btn-primary btn-sm" id="modal-btn-save-notes">Save Notes</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scoring Weights Modal -->
+    <div class="modal-backdrop" id="weights-modal" aria-hidden="true">
+        <div class="modal-card modal-md">
+            <div class="modal-header">
+                <h3 class="modal-title">Transparent Scoring Weights Configuration</h3>
+                <button type="button" class="modal-close-btn" id="modal-close-weights">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted">The ranking engine computes an explainable, weighted qualification score based on these 5 dimensions (Total: 100%):</p>
+                <div class="weights-list">
+                    <div class="weight-item">
+                        <div class="weight-label">
+                            <strong>1. Technical Skills Match</strong>
+                            <span>Required & preferred skills graph comparison</span>
+                        </div>
+                        <span class="weight-value badge badge-primary">40%</span>
+                    </div>
+                    <div class="weight-item">
+                        <div class="weight-label">
+                            <strong>2. Relevant Experience Match</strong>
+                            <span>Candidate years vs JD minimum experience</span>
+                        </div>
+                        <span class="weight-value badge badge-primary">25%</span>
+                    </div>
+                    <div class="weight-item">
+                        <div class="weight-label">
+                            <strong>3. Education Level Match</strong>
+                            <span>Degree level alignment (Bachelor's, Master's, PhD)</span>
+                        </div>
+                        <span class="weight-value badge badge-primary">15%</span>
+                    </div>
+                    <div class="weight-item">
+                        <div class="weight-label">
+                            <strong>4. Semantic JD Similarity</strong>
+                            <span>TF-IDF & N-Gram Cosine Similarity index</span>
+                        </div>
+                        <span class="weight-value badge badge-primary">10%</span>
+                    </div>
+                    <div class="weight-item">
+                        <div class="weight-label">
+                            <strong>5. Certifications & Qualifications</strong>
+                            <span>Verified technical certifications (AWS, CKA, etc.)</span>
+                        </div>
+                        <span class="weight-value badge badge-primary">10%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btn-close-weights-footer">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ethical AI Safeguards Modal -->
+    <div class="modal-backdrop" id="fairness-modal" aria-hidden="true">
+        <div class="modal-card modal-md">
+            <div class="modal-header">
+                <h3 class="modal-title">Ethical AI & Bias Prevention Safeguards</h3>
+                <button type="button" class="modal-close-btn" id="modal-close-fairness">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="fairness-badge-hero">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <h4>100% Merit-Based Qualification Screening</h4>
+                </div>
+                <p>This system strictly enforces bias-free candidate evaluation. <strong>No protected demographic characteristics</strong> are extracted or factored into scoring:</p>
+                <div class="protected-grid">
+                    <div class="protected-item">🚫 Gender / Sex</div>
+                    <div class="protected-item">🚫 Age / Date of Birth</div>
+                    <div class="protected-item">🚫 Race & Ethnicity</div>
+                    <div class="protected-item">🚫 Religion / Caste</div>
+                    <div class="protected-item">🚫 Nationality</div>
+                    <div class="protected-item">🚫 Disability Status</div>
+                    <div class="protected-item">🚫 Marital Status</div>
+                    <div class="protected-item">🚫 Candidate Photo</div>
+                </div>
+                <p class="text-muted mt-3">All scores are calculated strictly from verifiable technical skills, demonstrated work experience, education level, and job description alignment.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btn-close-fairness-footer">Understood</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Toast Notifications Container -->
+    <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+    <!-- Vanilla JavaScript Scripts -->
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+Arjun Patel
+Backend Python Developer
+Email: arjun.patel@example.com | Phone: +1 512-555-0177 | Location: Austin, TX
+
+==================================================
+PROFESSIONAL SUMMARY
+==================================================
+Backend Software Engineer with 3.5 years of experience building high-throughput APIs, distributed systems, and database architectures.
+
+==================================================
+TECHNICAL SKILLS
+==================================================
+Python, FastAPI, Django, PostgreSQL, Redis, Docker, Git, REST API, Linux, SQL, MongoDB, Unit Testing, CI/CD
+
+==================================================
+WORK EXPERIENCE
+==================================================
+
+Backend Engineer - Apex Fintech Systems (2021 - Present)
+Engineered transactional financial APIs in Python using FastAPI and PostgreSQL. Implemented Redis caching and Celery task queues. Conducted rigorous unit testing and automated integration testing.
+
+Junior Backend Developer - ByteCraft Technologies (2020 - 2021)
+Assisted in migrating legacy monolith services to Python REST API microservices with Docker.
+
+==================================================
+EDUCATION
+==================================================
+Bachelor of Technology in Information Technology, UT Austin (2016 - 2020)
+
+==================================================
+CERTIFICATIONS
+==================================================
+AWS Certified Cloud Practitioner

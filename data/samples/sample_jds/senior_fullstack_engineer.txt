@@ -1,0 +1,25 @@
+Job Title: Senior Full Stack Engineer
+Location: San Francisco, CA / Remote
+Experience Required: 4+ years of experience
+Education: Bachelor's degree in Computer Science, Software Engineering, or related field
+
+Job Overview:
+We are looking for a highly skilled Senior Full Stack Engineer to design, develop, and scale our core SaaS platform. You will collaborate with cross-functional product teams to deliver high-performance, fault-tolerant web applications.
+
+Required Skills:
+- Python, Django or FastAPI
+- React, JavaScript, TypeScript, HTML5, CSS3
+- PostgreSQL, Redis, Database Optimization
+- REST API design, Microservices architecture
+- Docker, CI/CD, Git
+
+Preferred Skills:
+- AWS, Kubernetes, Terraform
+- GraphQL, WebSockets
+- Automated Unit Testing, TDD, Agile/Scrum
+
+Key Responsibilities:
+- Build responsive front-end user interfaces using React and modern JavaScript.
+- Develop robust, scalable back-end APIs in Python.
+- Architect high-throughput database schemas with PostgreSQL.
+- Implement CI/CD deployment pipelines using Docker and GitHub Actions.
