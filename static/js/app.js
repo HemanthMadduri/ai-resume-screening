@@ -844,31 +844,49 @@ function openCandidateModal(candidateId) {
         allContainer.innerHTML = cand.skills.map(s => `<span class="skill-chip">${s}</span>`).join('');
     }
 
-    // Experience & Education Details
+    // Experience & Education Details with explicit JD Comparison
     const expSummaryEl = document.getElementById('modal-exp-summary');
     const expTimeline = document.getElementById('modal-exp-timeline');
-    if (expSummaryEl) expSummaryEl.textContent = cand.experience_text;
+    const reqExp = AppState.jobDescription?.min_experience_years || 0;
+    const candExp = cand.total_experience_years !== null ? `${cand.total_experience_years} yrs` : cand.experience_text;
+    
+    if (expSummaryEl) {
+        expSummaryEl.innerHTML = `${candExp} <small style="color: var(--text-muted); font-size: 11px;">(JD Required: ${reqExp > 0 ? reqExp + '+ yrs' : 'Any'})</small>`;
+    }
 
     if (expTimeline) {
+        let expHtml = `
+            <div style="background-color: var(--bg-card-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 12px; font-size: 12.5px;">
+                <span style="color: var(--text-muted);">Candidate Experience:</span> <strong>${candExp}</strong> &bull; 
+                <span style="color: var(--text-muted);">Required:</span> <strong>${reqExp > 0 ? reqExp + '+ yrs' : 'None specified'}</strong> &bull; 
+                <span style="color: var(--text-muted);">Experience Match:</span> <strong style="color: #3b82f6;">${bd.experience_score || 0}%</strong>
+            </div>
+        `;
         if (cand.experience_records && cand.experience_records.length > 0) {
-            expTimeline.innerHTML = cand.experience_records.map(rec => `
+            expHtml += cand.experience_records.map(rec => `
                 <div class="timeline-item">
                     <span class="timeline-duration">${rec.duration || 'Detected Work Record'}</span>
                     <p class="timeline-details">${rec.detail}</p>
                 </div>
             `).join('');
         } else {
-            expTimeline.innerHTML = `<p class="text-muted">${cand.experience_text}</p>`;
+            expHtml += `<p class="text-muted">${cand.experience_text}</p>`;
         }
+        expTimeline.innerHTML = expHtml;
     }
 
     const eduBlock = document.getElementById('modal-education-block');
+    const reqEdu = AppState.jobDescription?.required_education || "Bachelor's";
     if (eduBlock) {
         eduBlock.innerHTML = `
             <div class="education-item">
-                <strong>Highest Level:</strong> ${cand.education_level}
+                <div style="margin-bottom: 4px;">
+                    <span style="color: var(--text-muted);">Candidate Degree:</span> <strong>${cand.education_level}</strong> &bull; 
+                    <span style="color: var(--text-muted);">JD Required:</span> <strong>${reqEdu}</strong> &bull;
+                    <span style="color: var(--text-muted);">Match:</span> <strong style="color: #8b5cf6;">${bd.education_score || 0}%</strong>
+                </div>
                 ${cand.education_records && cand.education_records.length > 0 ? `
-                    <div style="margin-top: 4px; font-size: 11.5px; color: var(--text-muted);">
+                    <div style="margin-top: 6px; font-size: 11.5px; color: var(--text-muted); border-top: 1px dashed var(--border-color); padding-top: 4px;">
                         ${cand.education_records.map(e => e.detail).join('<br/>')}
                     </div>
                 ` : ''}
