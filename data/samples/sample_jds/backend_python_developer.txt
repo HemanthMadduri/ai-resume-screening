@@ -1,0 +1,24 @@
+Job Title: Backend Python & API Engineer
+Location: Seattle, WA / Remote
+Experience Required: 3+ years of backend development
+Education: Bachelor's degree in Computer Science or related discipline
+
+Job Overview:
+Looking for a Backend Python Engineer to architect high-throughput transactional APIs, optimize PostgreSQL databases, and build distributed microservices.
+
+Required Skills:
+- Python, FastAPI, Django, Flask
+- PostgreSQL, SQL, Database Indexing & Optimization
+- Redis, Caching Systems
+- REST API architecture, Microservices
+- Docker, Git, Linux, Unit Testing
+
+Preferred Skills:
+- AWS, Celery, Kafka
+- System Design, GraphQL
+- CI/CD, Agile/Scrum
+
+Key Responsibilities:
+- Build low-latency, scalable RESTful API endpoints in Python (FastAPI/Django).
+- Design and maintain relational PostgreSQL database schemas.
+- Implement Redis caching layers and asynchronous task queues.

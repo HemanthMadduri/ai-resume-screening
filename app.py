@@ -183,6 +183,20 @@ def list_sample_jds():
     return jsonify({"success": True, "samples": samples})
 
 
+@app.route("/api/parse-jd", methods=["POST"])
+def parse_jd_preview():
+    """Parse and return live extracted requirements from a JD string."""
+    data = request.get_json() or {}
+    jd_text = data.get("jd_text", "").strip()
+    custom_title = data.get("jd_title", "").strip()
+    if not jd_text:
+        return jsonify({"success": False, "error": "No JD text provided"}), 400
+
+    jd = NLPAnalyzer.parse_job_description(jd_text, custom_title=custom_title)
+    return jsonify({"success": True, "job_description": jd.to_dict()})
+
+
+
 @app.route("/api/upload-resumes", methods=["POST"])
 def upload_resumes():
     """

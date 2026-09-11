@@ -172,6 +172,12 @@ function initEventListeners() {
         sampleJdSelect.addEventListener('change', handleSampleJdSelect);
     }
 
+    // JD Text Input Live Preview Listener
+    const jdTextInput = document.getElementById('jd-text-input');
+    if (jdTextInput) {
+        jdTextInput.addEventListener('input', handleJdTextInput);
+    }
+
     // JD File Upload
     const jdFileInput = document.getElementById('jd-file-upload');
     if (jdFileInput) {
@@ -284,7 +290,10 @@ async function handleSampleJdSelect(e) {
                 const jdTitleEl = document.getElementById('jd-role-title');
                 if (jdTextEl) jdTextEl.value = sample.content;
                 if (jdTitleEl) jdTitleEl.value = sample.title;
-                showToast(`Loaded sample JD: ${sample.title}`, 'info');
+                
+                // Immediately parse and display requirements preview
+                await triggerJdParsePreview(sample.content, sample.title);
+                showToast(`Auto-loaded: ${sample.title}`, 'success');
             }
         }
     } catch (err) {
@@ -292,16 +301,78 @@ async function handleSampleJdSelect(e) {
     }
 }
 
+async function triggerJdParsePreview(jdText, jdTitle = '') {
+    if (!jdText.trim()) return;
+
+    try {
+        const response = await fetch('/api/parse-jd', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ jd_text: jdText, jd_title: jdTitle })
+        });
+        const data = await response.json();
+        if (data.success && data.job_description) {
+            renderJdPreview(data.job_description);
+        }
+    } catch (err) {
+        console.error('Failed to parse live JD preview:', err);
+    }
+}
+
+function renderJdPreview(jd) {
+    const previewContainer = document.getElementById('jd-analysis-preview');
+    const expEl = document.getElementById('jd-preview-exp');
+    const eduEl = document.getElementById('jd-preview-edu');
+    const skillsContainer = document.getElementById('jd-preview-skills');
+
+    if (!previewContainer) return;
+    previewContainer.style.display = 'block';
+
+    if (expEl) expEl.textContent = `${jd.min_experience_years || 0} yrs`;
+    if (eduEl) eduEl.textContent = jd.required_education || "Bachelor's";
+
+    if (skillsContainer) {
+        let chipsHtml = '';
+        if (jd.required_skills && jd.required_skills.length > 0) {
+            chipsHtml += jd.required_skills.map(s => `<span class="skill-chip required">${s}</span>`).join('');
+        }
+        if (jd.preferred_skills && jd.preferred_skills.length > 0) {
+            chipsHtml += jd.preferred_skills.map(s => `<span class="skill-chip preferred">★ ${s}</span>`).join('');
+        }
+        skillsContainer.innerHTML = chipsHtml || '<span class="text-muted">No specific technical skills detected</span>';
+    }
+
+    // Update top bar indicator
+    const topbarTitle = document.getElementById('topbar-job-title');
+    if (topbarTitle && jd.title) {
+        topbarTitle.textContent = jd.title;
+    }
+}
+
+let jdInputDebounceTimer = null;
+function handleJdTextInput(e) {
+    clearTimeout(jdInputDebounceTimer);
+    const text = e.target.value;
+    const titleEl = document.getElementById('jd-role-title');
+    const title = titleEl ? titleEl.value : '';
+    jdInputDebounceTimer = setTimeout(() => {
+        if (text.trim().length > 20) {
+            triggerJdParsePreview(text, title);
+        }
+    }, 600);
+}
+
 function handleJdFileUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
         const content = event.target.result;
         const jdTextEl = document.getElementById('jd-text-input');
         if (jdTextEl) {
             jdTextEl.value = content;
+            await triggerJdParsePreview(content, file.name.replace('.txt', ''));
             showToast(`Loaded JD from file: ${file.name}`, 'success');
         }
     };

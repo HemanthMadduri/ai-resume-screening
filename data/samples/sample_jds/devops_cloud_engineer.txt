@@ -1,0 +1,26 @@
+Job Title: DevOps & Cloud Infrastructure Engineer
+Location: Austin, TX / Remote
+Experience Required: 3+ years of experience
+Education: Bachelor's degree in Computer Science, IT, or related technical field
+
+Job Overview:
+We are looking for a DevOps Engineer to automate and scale our cloud infrastructure on AWS and Kubernetes. You will build resilient CI/CD pipelines and implement observability.
+
+Required Skills:
+- Kubernetes, Docker, Containerization
+- AWS, Cloud Architecture
+- Terraform, Infrastructure as Code (IaC)
+- CI/CD, Jenkins, GitHub Actions
+- Linux, Bash/Shell Scripting
+- Git, Microservices
+
+Preferred Skills:
+- Prometheus, Grafana, Datadog
+- Python, Ansible, Helm
+- Certified Kubernetes Administrator (CKA), AWS Certified Solutions Architect
+
+Key Responsibilities:
+- Manage multi-cluster Kubernetes deployments on AWS EKS.
+- Build automated deployment pipelines using GitHub Actions and Jenkins.
+- Write modular Terraform scripts to provision infrastructure.
+- Monitor system reliability, uptime, and performance metrics.

@@ -1,0 +1,24 @@
+Job Title: Frontend React Developer
+Location: Remote / New York, NY
+Experience Required: 2+ years of experience in modern frontend development
+Education: Bachelor's degree or equivalent technical experience
+
+Job Overview:
+We are seeking a Frontend Developer proficient in React, JavaScript/TypeScript, and modern UI/UX principles to build accessible, high-performance web interfaces.
+
+Required Skills:
+- React, JavaScript, TypeScript
+- HTML5, CSS3, Responsive Design
+- Redux, State Management
+- REST API integration, WebSockets
+- Git, Unit Testing
+
+Preferred Skills:
+- Next.js, Tailwind CSS, Webpack/Vite
+- UI/UX Design, Figma
+- Agile/Scrum methodologies
+
+Key Responsibilities:
+- Develop interactive, component-based user interfaces in React.
+- Ensure cross-browser compatibility and mobile responsiveness.
+- Collaborate with backend engineers to integrate RESTful APIs.
