@@ -1,0 +1,23 @@
+Job Title: Mobile Application Developer (Flutter & React Native)
+Location: Los Angeles, CA / Remote
+Experience Required: 2+ years of mobile app development
+Education: Bachelor's degree in Computer Science or equivalent software experience
+
+Job Overview:
+We are looking for a creative Mobile App Developer to build responsive, fluid, cross-platform mobile applications for iOS and Android using Flutter and React Native.
+
+Required Skills:
+- Flutter, Dart, React Native, JavaScript, TypeScript
+- Mobile UI/UX Design, Responsive Layouts
+- REST API Integration, JSON Parsing
+- Git, State Management (Redux or Bloc/Provider)
+
+Preferred Skills:
+- iOS Swift / Android Kotlin Native Interop
+- Firebase, Push Notifications, App Store & Google Play Deployment
+- Automated Unit Testing, CI/CD for Mobile (Fastlane)
+
+Key Responsibilities:
+- Build high-performance mobile applications for iOS and Android.
+- Create pixel-perfect UI designs and smooth animations.
+- Integrate backend REST APIs and secure local storage mechanisms.

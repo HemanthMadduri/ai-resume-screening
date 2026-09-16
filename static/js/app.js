@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     initEventListeners();
     fetchInitialData();
+    loadSampleJdsDropdown();
 });
 
 function initTheme() {
@@ -172,6 +173,43 @@ function initEventListeners() {
         sampleJdSelect.addEventListener('change', handleSampleJdSelect);
     }
 
+    // Custom JD Modal Triggers
+    const btnOpenCustomJd = document.getElementById('btn-open-custom-jd-modal');
+    const customJdModal = document.getElementById('custom-jd-modal');
+    const btnCloseCustomJd = document.getElementById('modal-close-custom-jd');
+    const btnCancelCustomJd = document.getElementById('btn-cancel-custom-jd');
+    const btnAutoTemplateJd = document.getElementById('btn-auto-template-jd');
+    const btnSaveCustomJd = document.getElementById('btn-save-custom-jd');
+
+    if (btnOpenCustomJd && customJdModal) {
+        btnOpenCustomJd.addEventListener('click', () => {
+            customJdModal.classList.add('show');
+        });
+    }
+    if (btnCloseCustomJd && customJdModal) {
+        btnCloseCustomJd.addEventListener('click', () => {
+            customJdModal.classList.remove('show');
+        });
+    }
+    if (btnCancelCustomJd && customJdModal) {
+        btnCancelCustomJd.addEventListener('click', () => {
+            customJdModal.classList.remove('show');
+        });
+    }
+    if (customJdModal) {
+        customJdModal.addEventListener('click', (e) => {
+            if (e.target === customJdModal) customJdModal.classList.remove('show');
+        });
+    }
+
+    if (btnAutoTemplateJd) {
+        btnAutoTemplateJd.addEventListener('click', generateCustomJdTemplate);
+    }
+
+    if (btnSaveCustomJd) {
+        btnSaveCustomJd.addEventListener('click', handleSaveCustomJd);
+    }
+
     // JD Text Input Live Preview Listener
     const jdTextInput = document.getElementById('jd-text-input');
     if (jdTextInput) {
@@ -276,6 +314,58 @@ function setupModal(triggerId, modalId, closeBtnId, footerCloseBtnId) {
 // 5. JOB DESCRIPTION HANDLING
 // ==========================================================================
 
+async function loadSampleJdsDropdown(selectedFilename = null) {
+    const selectEl = document.getElementById('select-sample-jd');
+    if (!selectEl) return;
+
+    try {
+        const response = await fetch('/api/sample-jds');
+        const data = await response.json();
+        if (data.success && data.samples) {
+            selectEl.innerHTML = '<option value="">-- Select Target Job Role --</option>';
+
+            const builtinRoles = [];
+            const customRoles = [];
+
+            data.samples.forEach(sample => {
+                if (sample.filename.startsWith('custom_')) {
+                    customRoles.push(sample);
+                } else {
+                    builtinRoles.push(sample);
+                }
+            });
+
+            if (customRoles.length > 0) {
+                const optgroupCustom = document.createElement('optgroup');
+                optgroupCustom.label = 'Custom Created Roles';
+                customRoles.forEach(sample => {
+                    const opt = document.createElement('option');
+                    opt.value = sample.filename;
+                    opt.textContent = `★ ${sample.title}`;
+                    optgroupCustom.appendChild(opt);
+                });
+                selectEl.appendChild(optgroupCustom);
+            }
+
+            const optgroupBuiltin = document.createElement('optgroup');
+            optgroupBuiltin.label = 'Pre-Configured Industry Roles';
+            builtinRoles.forEach(sample => {
+                const opt = document.createElement('option');
+                opt.value = sample.filename;
+                opt.textContent = sample.title;
+                optgroupBuiltin.appendChild(opt);
+            });
+            selectEl.appendChild(optgroupBuiltin);
+
+            if (selectedFilename) {
+                selectEl.value = selectedFilename;
+            }
+        }
+    } catch (err) {
+        console.error('Failed to load sample JDs dropdown:', err);
+    }
+}
+
 async function handleSampleJdSelect(e) {
     const selectedKey = e.target.value;
     if (!selectedKey) return;
@@ -284,7 +374,7 @@ async function handleSampleJdSelect(e) {
         const response = await fetch('/api/sample-jds');
         const data = await response.json();
         if (data.success && data.samples) {
-            const sample = data.samples.find(s => s.filename.includes(selectedKey));
+            const sample = data.samples.find(s => s.filename === selectedKey || s.filename.includes(selectedKey));
             if (sample) {
                 const jdTextEl = document.getElementById('jd-text-input');
                 const jdTitleEl = document.getElementById('jd-role-title');
@@ -298,6 +388,135 @@ async function handleSampleJdSelect(e) {
         }
     } catch (err) {
         showToast('Failed to load sample JD', 'error');
+    }
+}
+
+function generateCustomJdTemplate() {
+    const title = (document.getElementById('custom-jd-title')?.value || '').trim() || 'Software Engineer';
+    const exp = (document.getElementById('custom-jd-exp')?.value || '').trim() || '3+ years';
+    const edu = (document.getElementById('custom-jd-edu')?.value || "Bachelor's").trim();
+    const reqSkillsRaw = (document.getElementById('custom-jd-req-skills')?.value || '').trim();
+    const prefSkillsRaw = (document.getElementById('custom-jd-pref-skills')?.value || '').trim();
+
+    let text = `Job Title: ${title}\n`;
+    text += `Experience Required: ${exp}\n`;
+    text += `Education: ${edu} Degree in Computer Science, Engineering, or relevant technical discipline.\n\n`;
+    text += `Job Overview:\n`;
+    text += `We are actively hiring a high-performing ${title} to join our core engineering team. In this role, you will architect, build, and maintain scalable applications, collaborate across teams, and implement robust solutions using cutting-edge technologies.\n\n`;
+
+    text += `Key Responsibilities:\n`;
+    text += `- Design, develop, and deploy high-quality software features and architectures.\n`;
+    text += `- Collaborate with cross-functional teams including product management and design.\n`;
+    text += `- Optimize systems for maximum speed, security, and high availability.\n`;
+    text += `- Write clean, maintainable, and comprehensive unit/integration test suites.\n\n`;
+
+    if (reqSkillsRaw) {
+        text += `Required Technical Qualifications & Skills:\n`;
+        reqSkillsRaw.split(',').forEach(s => {
+            const trimmed = s.trim();
+            if (trimmed) text += `- Strong proficiency with ${trimmed}\n`;
+        });
+        text += `\n`;
+    } else {
+        text += `Required Technical Qualifications & Skills:\n`;
+        text += `- Demonstrated hands-on experience in core software engineering and development.\n\n`;
+    }
+
+    if (prefSkillsRaw) {
+        text += `Preferred / Nice-to-Have Skills:\n`;
+        prefSkillsRaw.split(',').forEach(s => {
+            const trimmed = s.trim();
+            if (trimmed) text += `- Experience with ${trimmed}\n`;
+        });
+        text += `\n`;
+    }
+
+    const contentEl = document.getElementById('custom-jd-content');
+    if (contentEl) {
+        contentEl.value = text;
+        showToast('Generated description template from inputs', 'info');
+    }
+}
+
+async function handleSaveCustomJd() {
+    const titleEl = document.getElementById('custom-jd-title');
+    const expEl = document.getElementById('custom-jd-exp');
+    const eduEl = document.getElementById('custom-jd-edu');
+    const reqSkillsEl = document.getElementById('custom-jd-req-skills');
+    const prefSkillsEl = document.getElementById('custom-jd-pref-skills');
+    const contentEl = document.getElementById('custom-jd-content');
+
+    const title = titleEl ? titleEl.value.trim() : '';
+    const exp = expEl ? expEl.value.trim() : '';
+    const edu = eduEl ? eduEl.value.trim() : "Bachelor's";
+    const reqSkills = reqSkillsEl ? reqSkillsEl.value.trim() : '';
+    const prefSkills = prefSkillsEl ? prefSkillsEl.value.trim() : '';
+    let content = contentEl ? contentEl.value.trim() : '';
+
+    if (!title) {
+        showToast('Please enter a Job Title / Role Name', 'warning');
+        if (titleEl) titleEl.focus();
+        return;
+    }
+
+    // Auto-generate content if empty
+    if (!content) {
+        generateCustomJdTemplate();
+        content = contentEl ? contentEl.value.trim() : '';
+    }
+
+    const payload = {
+        title: title,
+        min_experience: exp,
+        education: edu,
+        required_skills: reqSkills,
+        preferred_skills: prefSkills,
+        content: content
+    };
+
+    try {
+        const response = await fetch('/api/save-custom-jd', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+
+        if (data.success && data.job) {
+            showToast(data.message || `Saved new role: ${title}`, 'success');
+
+            // Close modal
+            const customJdModal = document.getElementById('custom-jd-modal');
+            if (customJdModal) customJdModal.classList.remove('show');
+
+            // Reload dropdown and select the newly saved job
+            await loadSampleJdsDropdown(data.job.filename);
+
+            // Populate dashboard JD fields
+            const jdTextEl = document.getElementById('jd-text-input');
+            const jdRoleTitleEl = document.getElementById('jd-role-title');
+            if (jdTextEl) jdTextEl.value = data.job.content;
+            if (jdRoleTitleEl) jdRoleTitleEl.value = data.job.title;
+
+            // Render live preview requirements
+            if (data.job_description) {
+                renderJdPreview(data.job_description);
+            } else {
+                await triggerJdParsePreview(data.job.content, data.job.title);
+            }
+
+            // Clear modal inputs for next time
+            if (titleEl) titleEl.value = '';
+            if (expEl) expEl.value = '';
+            if (reqSkillsEl) reqSkillsEl.value = '';
+            if (prefSkillsEl) prefSkillsEl.value = '';
+            if (contentEl) contentEl.value = '';
+        } else {
+            showToast(data.error || 'Failed to save custom job description', 'error');
+        }
+    } catch (err) {
+        console.error('Error saving custom JD:', err);
+        showToast('Network or server error while saving job role', 'error');
     }
 }
 

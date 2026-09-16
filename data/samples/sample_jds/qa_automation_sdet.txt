@@ -1,0 +1,24 @@
+Job Title: QA Automation & SDET Engineer
+Location: Denver, CO / Remote
+Experience Required: 3+ years in automated testing and software quality engineering
+Education: Bachelor's degree in Computer Science, Software Engineering, or related field
+
+Job Overview:
+Looking for a passionate SDET / QA Automation Engineer to design, implement, and maintain automated test frameworks for web applications, APIs, and microservices.
+
+Required Skills:
+- Selenium WebDriver, Cypress, Playwright
+- Python, Java or JavaScript
+- PyTest, JUnit or TestNG
+- REST API Testing, Postman, JMeter
+- Git, CI/CD Integration (Jenkins / GitHub Actions)
+
+Preferred Skills:
+- Performance Testing, Load Testing
+- Docker, Test-Driven Development (TDD)
+- Agile/Scrum, Jira, Bug Tracking
+
+Key Responsibilities:
+- Build modular test automation frameworks from scratch.
+- Integrate automated regression suites into CI/CD build pipelines.
+- Perform end-to-end API integration and load testing.

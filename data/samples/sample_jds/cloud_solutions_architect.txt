@@ -1,0 +1,24 @@
+Job Title: Cloud Solutions Architect (AWS & Azure)
+Location: Dallas, TX / Remote
+Experience Required: 5+ years of software architecture & cloud infrastructure
+Education: Bachelor's or Master's degree in Computer Science or related field
+
+Job Overview:
+Seeking an experienced Cloud Solutions Architect to design, migrate, and scale fault-tolerant distributed cloud systems on AWS and Microsoft Azure.
+
+Required Skills:
+- AWS, Microsoft Azure, Cloud Architecture
+- Kubernetes, Docker, Microservices Architecture
+- Terraform, Infrastructure as Code, CI/CD
+- System Design, High Availability, Database Design
+- Linux, Git, Python or Go
+
+Preferred Skills:
+- AWS Certified Solutions Architect, Azure Solutions Architect
+- Multi-cloud Strategy, Serverless (AWS Lambda), Event-Driven Systems
+- Disaster Recovery, Enterprise Security Governance
+
+Key Responsibilities:
+- Lead the architectural design and modernization of cloud services.
+- Define infrastructure standards, cost optimization, and security baselines.
+- Mentor development teams on distributed cloud system design.

@@ -112,15 +112,14 @@
                     </svg>
                     <h3>1. Target Job Description (JD)</h3>
                 </div>
-                <div class="jd-quick-actions">
-                    <select id="select-sample-jd" class="form-select form-select-sm">
-                        <option value="">-- Choose Job Type (Auto-Loads Requirements) --</option>
-                        <option value="senior_fullstack_engineer">Senior Full Stack Engineer (Python/React)</option>
-                        <option value="machine_learning_engineer">Machine Learning & NLP Specialist</option>
-                        <option value="devops_cloud_engineer">DevOps & Cloud Infrastructure Engineer</option>
-                        <option value="frontend_react_developer">Frontend React Developer</option>
-                        <option value="backend_python_developer">Backend Python & API Engineer</option>
+                <div class="jd-quick-actions" style="display: flex; align-items: center; gap: 8px;">
+                    <select id="select-sample-jd" class="form-select form-select-sm" style="max-width: 250px;">
+                        <option value="">-- Loading Job Roles... --</option>
                     </select>
+                    <button type="button" class="btn btn-outline btn-sm" id="btn-open-custom-jd-modal" title="Create and save a new custom job role">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <span>+ Add Role</span>
+                    </button>
                 </div>
             </div>
 

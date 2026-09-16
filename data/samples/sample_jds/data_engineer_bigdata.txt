@@ -1,0 +1,24 @@
+Job Title: Data Engineer & Big Data Pipeline Architect
+Location: Atlanta, GA / Remote
+Experience Required: 4+ years of data engineering & ETL pipeline experience
+Education: Bachelor's or Master's degree in Computer Science, Data Engineering, or related discipline
+
+Job Overview:
+Seeking a Senior Data Engineer to design high-throughput stream processing pipelines, manage data lakes, and optimize data warehouse architectures for real-time analytics.
+
+Required Skills:
+- Apache Spark, PySpark, Apache Kafka
+- SQL, PostgreSQL, Database Optimization
+- Python, Data Engineering, ETL Pipelines
+- Snowflake, BigQuery or Redshift
+- Git, Linux, Docker
+
+Preferred Skills:
+- Apache Airflow, dbt (Data Build Tool)
+- AWS / GCP Cloud Data Services
+- Data Modeling, Data Governance, Parquet/Iceberg formats
+
+Key Responsibilities:
+- Build fault-tolerant batch and real-time streaming data pipelines with Spark and Kafka.
+- Design performant data warehouse schemas on Snowflake/BigQuery.
+- Orchestrate automated DAG workflows with Apache Airflow.

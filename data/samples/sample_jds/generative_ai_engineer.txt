@@ -1,0 +1,24 @@
+Job Title: Generative AI & LLM Applications Engineer
+Location: San Francisco, CA / Remote
+Experience Required: 3+ years in Machine Learning / AI software development
+Education: Master's or Bachelor's degree in Artificial Intelligence, Data Science, or Computer Science
+
+Job Overview:
+We are looking for a Generative AI & LLM Engineer to build production-grade AI agents, Retrieval-Augmented Generation (RAG) systems, and fine-tuned transformer applications.
+
+Required Skills:
+- Generative AI, LLMs, Transformers
+- Python, PyTorch, Hugging Face
+- Natural Language Processing (NLP), spaCy
+- LangChain, LlamaIndex, Vector Databases (Pinecone/Milvus/Chroma)
+- REST API, FastAPI, Docker, Git
+
+Preferred Skills:
+- Model Fine-Tuning (LoRA, QLoRA), Quantization
+- Prompt Engineering, Evaluation Metrics (RAGAS)
+- AWS / GCP GPU Cloud Deployment, vLLM
+
+Key Responsibilities:
+- Build and evaluate enterprise RAG architectures and multi-agent AI systems.
+- Deploy low-latency LLM inference pipelines with FastAPI and Docker.
+- Fine-tune open-source models for domain-specific tasks.

@@ -65,6 +65,51 @@ class TestFlaskAPI(unittest.TestCase):
         json_resp = self.client.get("/api/export?format=json")
         self.assertEqual(json_resp.status_code, 200)
 
+    def test_parse_jd_preview_api(self):
+        sample_jd_text = (
+            "Job Title: Senior Kubernetes Engineer\n"
+            "Experience: 5+ years of experience in distributed systems.\n"
+            "Education: Bachelor's degree in Computer Science.\n"
+            "Required Skills: Kubernetes, Docker, Golang, AWS, Terraform.\n"
+        )
+        resp = self.client.post("/api/parse-jd", json={"jd_text": sample_jd_text, "jd_title": "Senior Kubernetes Engineer"})
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertTrue(data.get("success"))
+        jd = data.get("job_description", {})
+        self.assertEqual(jd.get("title"), "Senior Kubernetes Engineer")
+        self.assertTrue(len(jd.get("required_skills", [])) > 0)
+        self.assertEqual(jd.get("min_experience_years"), 5.0)
+
+    def test_save_and_list_custom_jd_api(self):
+        payload = {
+            "title": "Lead Security Architect",
+            "min_experience": "6 years",
+            "education": "Master's",
+            "required_skills": "Cybersecurity, AWS, Penetration Testing, SIEM",
+            "preferred_skills": "CISSP, Python",
+            "content": ""
+        }
+        resp = self.client.post("/api/save-custom-jd", json=payload)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.data)
+        self.assertTrue(data.get("success"))
+        saved_job = data.get("job", {})
+        self.assertIn("custom_lead_security_architect", saved_job.get("filename", ""))
+
+        # Verify it now appears in sample-jds list
+        list_resp = self.client.get("/api/sample-jds")
+        self.assertEqual(list_resp.status_code, 200)
+        list_data = json.loads(list_resp.data)
+        found = any(s["filename"] == saved_job["filename"] for s in list_data.get("samples", []))
+        self.assertTrue(found)
+
+        # Cleanup created custom test file
+        from config import Config
+        test_file = os.path.join(Config.SAMPLES_FOLDER, "sample_jds", saved_job["filename"])
+        if os.path.exists(test_file):
+            os.remove(test_file)
+
 
 if __name__ == "__main__":
     unittest.main()

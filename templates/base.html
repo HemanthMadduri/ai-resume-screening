@@ -412,6 +412,84 @@
         </div>
     </div>
 
+    <!-- Create Custom Job Role Modal -->
+    <div class="modal-backdrop" id="custom-jd-modal" aria-hidden="true">
+        <div class="modal-card modal-lg">
+            <div class="modal-header">
+                <div class="card-header-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="12" y1="18" x2="12" y2="12"></line>
+                        <line x1="9" y1="15" x2="15" y2="15"></line>
+                    </svg>
+                    <h3 class="modal-title" style="margin-bottom: 0;">Create & Save New Job Role</h3>
+                </div>
+                <button type="button" class="modal-close-btn" id="modal-close-custom-jd" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted" style="margin-bottom: 16px;">
+                    Define custom job requirements. This new role will be saved to your Job Library and automatically loaded into the active screening session.
+                </p>
+
+                <div class="form-grid-2col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label for="custom-jd-title"><strong>Job Title / Role Name <span class="text-danger">*</span></strong></label>
+                        <input type="text" id="custom-jd-title" class="form-input" placeholder="e.g. Lead DevOps & Cloud Engineer, Go Backend Developer, AI Research Scientist">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="custom-jd-exp"><strong>Minimum Experience Required:</strong></label>
+                        <input type="text" id="custom-jd-exp" class="form-input" placeholder="e.g. 4+ years (or 3)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="custom-jd-edu"><strong>Required Education Level:</strong></label>
+                        <select id="custom-jd-edu" class="form-select">
+                            <option value="Bachelor's">Bachelor's Degree (B.Tech / B.S. / B.E.)</option>
+                            <option value="Master's">Master's Degree (M.Tech / M.S. / MBA)</option>
+                            <option value="PhD">Doctorate / PhD</option>
+                            <option value="Associate">Associate Degree / Diploma</option>
+                            <option value="Any">Any / No Strict Degree Requirement</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label for="custom-jd-req-skills"><strong>Mandatory / Required Skills (comma separated):</strong></label>
+                        <input type="text" id="custom-jd-req-skills" class="form-input" placeholder="e.g. Python, Docker, Kubernetes, AWS, PostgreSQL, REST APIs">
+                        <span class="form-hint" style="font-size: 11.5px; color: var(--text-muted); display: block; margin-top: 4px;">Weighted with highest priority (40%) in candidate technical qualification scoring.</span>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label for="custom-jd-pref-skills"><strong>Preferred / Bonus Skills (comma separated):</strong></label>
+                        <input type="text" id="custom-jd-pref-skills" class="form-input" placeholder="e.g. Terraform, CI/CD, Redis, GraphQL, Prometheus, Kafka">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="label-with-action" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label for="custom-jd-content"><strong>Full Job Description & Responsibilities:</strong></label>
+                        <button type="button" class="btn btn-outline btn-xs" id="btn-auto-template-jd" title="Auto-format a full Job Description from the fields above">
+                            ✨ Auto-Generate Description Template
+                        </button>
+                    </div>
+                    <textarea id="custom-jd-content" class="form-textarea" rows="7" placeholder="Paste or type full job description text here, or click '✨ Auto-Generate Description Template' above to build one automatically..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn btn-outline" id="btn-cancel-custom-jd">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-save-custom-jd">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    <span>Save & Auto-Select Role</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Custom Toast Notifications Container -->
     <div class="toast-container" id="toast-container" aria-live="polite"></div>
 

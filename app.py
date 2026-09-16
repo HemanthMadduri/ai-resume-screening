@@ -1,5 +1,6 @@
 import os
 import io
+import re
 import csv
 import json
 import uuid
@@ -194,6 +195,93 @@ def parse_jd_preview():
 
     jd = NLPAnalyzer.parse_job_description(jd_text, custom_title=custom_title)
     return jsonify({"success": True, "job_description": jd.to_dict()})
+
+
+@app.route("/api/save-custom-jd", methods=["POST"])
+def save_custom_jd():
+    """Save a newly created custom job role and description to the persistent library."""
+    data = request.get_json() or {}
+    title = data.get("title", "").strip()
+    content = data.get("content", "").strip()
+    min_exp = data.get("min_experience", "").strip()
+    edu = data.get("education", "").strip()
+    req_skills = data.get("required_skills", "").strip()
+    pref_skills = data.get("preferred_skills", "").strip()
+
+    if not title:
+        return jsonify({"success": False, "error": "Job Role Title is required."}), 400
+
+    # If content wasn't provided or was simple, format a structured Job Description
+    if not content:
+        content_lines = [f"Job Title: {title}"]
+        if min_exp:
+            content_lines.append(f"Experience Required: {min_exp}")
+        if edu:
+            content_lines.append(f"Education: {edu}")
+        content_lines.append("\nJob Overview:")
+        content_lines.append(f"We are hiring for the role of {title}. The ideal candidate will possess hands-on expertise in the required technical domains and collaborate with the engineering team.")
+        
+        if req_skills:
+            content_lines.append("\nRequired Skills:")
+            for s in req_skills.split(","):
+                s_clean = s.strip()
+                if s_clean:
+                    content_lines.append(f"- {s_clean}")
+        if pref_skills:
+            content_lines.append("\nPreferred Skills:")
+            for s in pref_skills.split(","):
+                s_clean = s.strip()
+                if s_clean:
+                    content_lines.append(f"- {s_clean}")
+                    
+        content = "\n".join(content_lines)
+
+    # Ensure Job Title header is at top if not present
+    if not re.search(r'Job\s+Title:', content, re.IGNORECASE):
+        content = f"Job Title: {title}\n" + content
+
+    # Create safe filename
+    slug = re.sub(r'[^a-zA-Z0-9_]+', '_', title.lower()).strip('_')[:35] or "role"
+    filename = f"custom_{slug}_{uuid.uuid4().hex[:6]}.txt"
+    jds_dir = os.path.join(app.config["SAMPLES_FOLDER"], "sample_jds")
+    os.makedirs(jds_dir, exist_ok=True)
+    
+    filepath = os.path.join(jds_dir, filename)
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(content)
+
+    parsed_jd = NLPAnalyzer.parse_job_description(content, custom_title=title)
+
+    return jsonify({
+        "success": True,
+        "message": f"Successfully created and saved job role: {title}",
+        "job": {
+            "id": filename,
+            "filename": filename,
+            "title": title,
+            "content": content,
+            "parsed": parsed_jd.to_dict()
+        }
+    })
+
+
+@app.route("/api/delete-custom-jd/<filename>", methods=["DELETE"])
+def delete_custom_jd(filename: str):
+    """Delete a custom created job role from the library."""
+    safe_name = secure_filename(filename)
+    if not safe_name.startswith("custom_"):
+        return jsonify({"success": False, "error": "Cannot delete built-in system job descriptions."}), 400
+
+    filepath = os.path.join(app.config["SAMPLES_FOLDER"], "sample_jds", safe_name)
+    if os.path.exists(filepath):
+        try:
+            os.remove(filepath)
+            return jsonify({"success": True, "message": f"Deleted custom job: {safe_name}"})
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)}), 500
+            
+    return jsonify({"success": False, "error": "File not found"}), 404
+
 
 
 

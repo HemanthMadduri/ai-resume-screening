@@ -1,0 +1,24 @@
+Job Title: Cybersecurity & Security Operations Engineer
+Location: Washington, DC / Remote
+Experience Required: 3+ years of experience in Information Security
+Education: Bachelor's degree in Cybersecurity, Computer Science, or equivalent
+
+Job Overview:
+Looking for a Cybersecurity Engineer to safeguard our enterprise infrastructure, conduct vulnerability assessments, manage incident response, and enforce security policies.
+
+Required Skills:
+- Network Security, Firewalls, VPNs
+- SIEM tools, Splunk, Incident Response
+- Linux, Bash/Shell Scripting, Python
+- Vulnerability Assessment, Penetration Testing
+- Git, Problem Solving
+
+Preferred Skills:
+- CISSP, CompTIA Security+, CEH certifications
+- Cloud Security on AWS / Azure
+- Zero Trust Architecture, IAM, SOC Operations
+
+Key Responsibilities:
+- Monitor security events and investigate security incidents across endpoints.
+- Conduct regular vulnerability scans and penetration testing.
+- Implement security controls and ensure compliance with security standards.

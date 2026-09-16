@@ -1,0 +1,23 @@
+Job Title: Data Scientist & AI Analytics Specialist
+Location: Chicago, IL / Remote
+Experience Required: 3+ years of experience in Data Science & Statistical Modeling
+Education: Master's or Bachelor's degree in Data Science, Statistics, Mathematics, or Computer Science
+
+Job Overview:
+We are seeking a talented Data Scientist to build predictive models, discover actionable business insights, and deploy machine learning algorithms for large-scale decision systems.
+
+Required Skills:
+- Python, R, SQL, Pandas, NumPy
+- Machine Learning, Scikit-learn, Statistical Modeling
+- Data Analysis, Data Visualization, Matplotlib, Seaborn
+- REST API, Git, Problem Solving
+
+Preferred Skills:
+- Deep Learning, PyTorch, TensorFlow
+- Tableau, PowerBI, BigQuery, Snowflake
+- Apache Spark, Cloud Platforms (AWS or GCP)
+
+Key Responsibilities:
+- Develop predictive machine learning models to solve business challenges.
+- Perform exploratory data analysis and present data insights to stakeholders.
+- Design automated ETL pipelines and optimize analytical queries in SQL.
