@@ -84,6 +84,14 @@ def load_session_state():
 load_session_state()
 
 
+@app.before_request
+def ensure_state_loaded():
+    """Reload session state from disk if in-memory state is empty but file exists.
+    This handles Render app restarts / wakeup from sleep gracefully."""
+    if not CURRENT_STATE["candidates"] and os.path.exists(RESULTS_FILE):
+        load_session_state()
+
+
 def allowed_file(filename: str) -> bool:
     """Validate file extension against allowed types."""
     return "." in filename and filename.rsplit(".", 1)[1].lower() in app.config["ALLOWED_EXTENSIONS"]
