@@ -97,6 +97,9 @@ async function fetchInitialData() {
             if (document.getElementById('candidates-tbody')) {
                 renderCandidatesTable();
             }
+            if (document.getElementById('queued-files-list')) {
+                renderQueuedFilesList();
+            }
         }
     } catch (err) {
         console.error('Failed to fetch initial ATS data:', err);
@@ -228,9 +231,16 @@ function initEventListeners() {
     const browseBtn = document.getElementById('btn-browse-files');
 
     if (dropzone && fileInput) {
-        if (browseBtn) browseBtn.addEventListener('click', () => fileInput.click());
+        if (browseBtn) {
+            browseBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                fileInput.click();
+            });
+        }
         dropzone.addEventListener('click', (e) => {
-            if (e.target !== browseBtn) fileInput.click();
+            if (e.target !== browseBtn && !browseBtn.contains(e.target)) {
+                fileInput.click();
+            }
         });
 
         fileInput.addEventListener('change', (e) => {
@@ -606,6 +616,7 @@ async function handleFileUpload(fileList) {
     const files = Array.from(fileList);
     if (files.length === 0) return;
 
+    const fileInput = document.getElementById('resume-file-input');
     const validExtensions = ['pdf', 'docx', 'doc', 'txt'];
     const validFiles = files.filter(file => {
         const ext = file.name.split('.').pop().toLowerCase();
@@ -613,7 +624,8 @@ async function handleFileUpload(fileList) {
     });
 
     if (validFiles.length === 0) {
-        showToast('Please select valid resume files (.PDF, .DOCX, .TXT)', 'error');
+        showToast('Please select valid resume files (.PDF, .DOCX, .DOC, .TXT)', 'error');
+        if (fileInput) fileInput.value = '';
         return;
     }
 
@@ -649,6 +661,9 @@ async function handleFileUpload(fileList) {
 
         if (data.success) {
             showToast(data.message, 'success');
+            if (data.errors && data.errors.length > 0) {
+                setTimeout(() => showToast(data.errors.join(' | '), 'warning', 5000), 1000);
+            }
             await fetchInitialData();
             renderQueuedFilesList();
         } else {
@@ -657,6 +672,7 @@ async function handleFileUpload(fileList) {
     } catch (err) {
         showToast('An error occurred during upload', 'error');
     } finally {
+        if (fileInput) fileInput.value = '';
         setTimeout(() => {
             if (progressCard) progressCard.style.display = 'none';
         }, 1200);

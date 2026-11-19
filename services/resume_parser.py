@@ -47,6 +47,8 @@ class ResumeParser:
                 with pdfplumber.open(filepath) as pdf:
                     for page in pdf.pages:
                         extracted = page.extract_text()
+                        if not extracted:
+                            extracted = page.extract_text(layout=True)
                         if extracted:
                             text += extracted + "\n"
                 if text.strip():
@@ -59,6 +61,11 @@ class ResumeParser:
             try:
                 with open(filepath, "rb") as f:
                     reader = PyPDF2.PdfReader(f)
+                    if reader.is_encrypted:
+                        try:
+                            reader.decrypt("")
+                        except Exception:
+                            pass
                     for page in reader.pages:
                         extracted = page.extract_text()
                         if extracted:
@@ -140,10 +147,10 @@ class ResumeParser:
         return "Not detected"
 
     @staticmethod
-    def extract_name(text: str, email: str = "") -> str:
+    def extract_name(text: str, email: str = "", filename: str = "") -> str:
         """
         Extract candidate name using top header heuristics, email correlation,
-        and spaCy NER.
+        spaCy NER, and filename heuristics.
         """
         lines = [line.strip() for line in text.split("\n") if line.strip()]
         ignored_keywords = {
@@ -195,7 +202,18 @@ class ResumeParser:
             if clean_parts:
                 return " ".join(clean_parts)
 
-        return "Not detected"
+        # 5. Filename fallback (e.g. rahul_sharma_senior_ml.pdf -> Rahul Sharma)
+        if filename:
+            name_base = os.path.splitext(os.path.basename(filename))[0]
+            name_base = re.sub(r'resume|cv|profile|developer|engineer|senior|junior|backend|frontend|fullstack', '', name_base, flags=re.IGNORECASE)
+            name_parts = re.split(r'[._\-\s]+', name_base.strip())
+            clean_parts = [p.title() for p in name_parts if p.isalpha() and len(p) > 1 and p.lower() not in ignored_keywords]
+            if len(clean_parts) >= 2:
+                return " ".join(clean_parts[:3])
+            elif len(clean_parts) == 1:
+                return clean_parts[0]
+
+        return "Candidate"
 
     @staticmethod
     def extract_location(text: str) -> str:
@@ -244,7 +262,7 @@ class ResumeParser:
         # Extract core fields
         email = cls.extract_email(cleaned)
         phone = cls.extract_phone(cleaned)
-        name = cls.extract_name(cleaned, email=email)
+        name = cls.extract_name(cleaned, email=email, filename=filename)
         location = cls.extract_location(cleaned)
         
         # Extract skills, education, experience, certs

@@ -98,6 +98,22 @@ class TestRankingEngine(unittest.TestCase):
         self.assertAlmostEqual(cand1.score_breakdown.experience_score, cand2.score_breakdown.experience_score, places=1)
         self.assertAlmostEqual(cand1.score_breakdown.education_score, cand2.score_breakdown.education_score, places=1)
 
+    def test_education_matching_accuracy(self):
+        # Bachelor's meeting Bachelor's requirement must score 100.0, NOT 45.0
+        cand_bach = Candidate(name="Bach User", education_level="Bachelor's")
+        score_bach = self.engine.evaluate_education_match(cand_bach, self.sample_jd)
+        self.assertEqual(score_bach, 100.0)
+
+        # Master's exceeding Bachelor's requirement must score 100.0
+        cand_mast = Candidate(name="Mast User", education_level="Master's")
+        score_mast = self.engine.evaluate_education_match(cand_mast, self.sample_jd)
+        self.assertEqual(score_mast, 100.0)
+
+        # Associate below Bachelor's requirement must score 80.0
+        cand_assoc = Candidate(name="Assoc User", education_level="Diploma/Associate")
+        score_assoc = self.engine.evaluate_education_match(cand_assoc, self.sample_jd)
+        self.assertEqual(score_assoc, 80.0)
+
 
 if __name__ == "__main__":
     unittest.main()

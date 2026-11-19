@@ -52,6 +52,36 @@ class TestResumeParser(unittest.TestCase):
         deg_level, records = extract_education_from_text(edu_text)
         self.assertEqual(deg_level, "Master's")
 
+    def test_job_title_and_cert_not_misidentified_as_degree(self):
+        # Associate in job title must NOT register as an Associate Degree
+        # Scrum Master in certification must NOT register as a Master's degree
+        text = (
+            "Associate Web Developer at PixelCraft Studios (2023 - Present)\n"
+            "EDUCATION\n"
+            "Bachelor of Science in Computer Science (2019 - 2023)\n"
+            "CERTIFICATIONS\n"
+            "Certified Scrum Master"
+        )
+        deg_level, records = extract_education_from_text(text)
+        self.assertEqual(deg_level, "Bachelor's")
+
+    def test_education_dates_do_not_inflate_experience(self):
+        # 4-year degree (2019 - 2023) should NOT be added to 1 year of work experience
+        text = (
+            "Sneha Rao\n"
+            "PROFESSIONAL SUMMARY\n"
+            "Junior Web Developer with 1 year of experience.\n"
+            "WORK EXPERIENCE\n"
+            "Associate Web Developer at TechCorp (2023 - Present)\n"
+            "EDUCATION\n"
+            "Bachelor of Science in Computer Science, Boston University (2019 - 2023)"
+        )
+        years, summary, records = parse_experience_years(text)
+        self.assertIsNotNone(years)
+        # Must be around 1.0 - 3.0 years, definitely not 7.0 years
+        self.assertLessEqual(years, 3.5)
+        self.assertGreaterEqual(years, 1.0)
+
     def test_nonexistent_or_empty_file_graceful_handling(self):
         cand = ResumeParser.parse_resume("non_existent_file.pdf")
         self.assertEqual(cand.name, "Unreadable / Empty Document")

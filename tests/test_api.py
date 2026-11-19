@@ -1,6 +1,7 @@
 import unittest
 import os
 import sys
+import io
 import json
 
 # Add project root to sys.path
@@ -109,6 +110,16 @@ class TestFlaskAPI(unittest.TestCase):
         test_file = os.path.join(Config.SAMPLES_FOLDER, "sample_jds", saved_job["filename"])
         if os.path.exists(test_file):
             os.remove(test_file)
+
+    def test_single_resume_upload_api(self):
+        sample_path = os.path.join("data", "samples", "sample_resumes", "arjun_patel_backend.txt")
+        with open(sample_path, "rb") as f:
+            data = {"files": (io.BytesIO(f.read()), "test_arjun_backend.txt")}
+            resp = self.client.post("/api/upload-resumes", data=data, content_type="multipart/form-data")
+        self.assertEqual(resp.status_code, 200)
+        json_data = json.loads(resp.data)
+        self.assertTrue(json_data.get("success"))
+        self.assertEqual(json_data.get("uploaded_count"), 1)
 
 
 if __name__ == "__main__":

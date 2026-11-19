@@ -2,7 +2,7 @@ from typing import List, Dict, Any, Optional, Tuple
 import copy
 from models.candidate import Candidate, JobDescription, ScoreBreakdown
 from services.nlp_analyzer import NLPAnalyzer
-from services.text_processor import DEGREE_LEVELS
+from services.text_processor import DEGREE_LEVELS, get_degree_level
 from config import Config
 
 class RankingEngine:
@@ -87,8 +87,8 @@ class RankingEngine:
         """
         Score candidate education degree level against JD requirement.
         """
-        req_level_num = DEGREE_LEVELS.get(jd.required_education.lower(), 3)
-        cand_level_num = DEGREE_LEVELS.get(candidate.education_level.lower(), 0)
+        req_level_num = get_degree_level(jd.required_education) or 3
+        cand_level_num = get_degree_level(candidate.education_level)
 
         if cand_level_num >= req_level_num and cand_level_num > 0:
             return 100.0

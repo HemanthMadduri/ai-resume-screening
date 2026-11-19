@@ -8,7 +8,7 @@ class Config:
     RESULTS_FOLDER = os.path.join(BASE_DIR, "data", "results")
     SAMPLES_FOLDER = os.path.join(BASE_DIR, "data", "samples")
     
-    ALLOWED_EXTENSIONS = {"pdf", "docx", "txt"}
+    ALLOWED_EXTENSIONS = {"pdf", "docx", "doc", "txt"}
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB max upload size
     
     # Configurable Scoring Weights (Must sum to 1.0)

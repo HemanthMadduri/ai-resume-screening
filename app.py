@@ -316,10 +316,18 @@ def upload_resumes():
         try:
             file.save(save_path)
             # Parse resume
-            candidate = ResumeParser.parse_resume(save_path, original_filename=orig_filename)
+            candidate = ResumeParser.parse_resume(save_path, original_filename=file.filename)
             processed_candidates.append(candidate)
         except Exception as e:
-            errors.append(f"{orig_filename}: Extraction error ({str(e)})")
+            errors.append(f"{file.filename}: Extraction error ({str(e)})")
+
+    if len(processed_candidates) == 0:
+        err_msg = errors[0] if errors else "No valid resumes could be uploaded or processed."
+        return jsonify({
+            "success": False,
+            "error": err_msg,
+            "errors": errors
+        }), 400
 
     # Append new candidates to state (avoiding duplicates based on filename)
     existing_filenames = {c.filename for c in CURRENT_STATE["candidates"]}
@@ -331,11 +339,22 @@ def upload_resumes():
             CURRENT_STATE["candidates"] = [existing for existing in CURRENT_STATE["candidates"] if existing.filename != c.filename]
             CURRENT_STATE["candidates"].append(c)
 
+    # If an active Job Description is already set, auto-rank candidates immediately
+    if CURRENT_STATE.get("job_description") and CURRENT_STATE["job_description"].raw_text:
+        try:
+            engine = RankingEngine()
+            CURRENT_STATE["candidates"] = engine.rank_candidates(
+                CURRENT_STATE["candidates"],
+                CURRENT_STATE["job_description"]
+            )
+        except Exception as e:
+            app.logger.warning(f"Auto-ranking after upload encountered notice: {e}")
+
     save_session_state()
 
     return jsonify({
         "success": True,
-        "message": f"Successfully uploaded and parsed {len(processed_candidates)} resumes.",
+        "message": f"Successfully uploaded and parsed {len(processed_candidates)} resume{'s' if len(processed_candidates) != 1 else ''}.",
         "uploaded_count": len(processed_candidates),
         "total_candidates": len(CURRENT_STATE["candidates"]),
         "errors": errors

@@ -70,19 +70,47 @@ class NLPAnalyzer:
 
         # 3. Minimum Experience Years detection
         min_exp_years = 0.0
-        exp_pattern = r'(\d+(?:\.\d+)?)\s*(?:\+|-|\s*to\s*\d+)?\s*(?:years?|yrs?)(?:\s+of)?\s+(?:experience|exp|relevant\s+experience)'
-        exp_matches = re.findall(exp_pattern, cleaned, re.IGNORECASE)
-        if exp_matches:
-            try:
-                values = [float(x) for x in exp_matches if float(x) <= 30]
-                if values:
-                    min_exp_years = min(values)  # take minimum stated requirement
-            except ValueError:
-                min_exp_years = 0.0
+        jd_exp_patterns = [
+            r'(?:min(?:imum)?\s+)?experience(?:\s+required)?\s*[:-]\s*(\d+(?:\.\d+)?)\+?\s*(?:years?|yrs?)',
+            r'(\d+(?:\.\d+)?)\s*(?:\+|-|\s*to\s*\d+)?\s*(?:years?|yrs?)(?:\s+of)?\s+(?:relevant|professional|industry|hands-on|work|software|backend|frontend|fullstack|engineering|development|technical)?\s*(?:experience|exp)',
+            r'(?:at\s+least|minimum|min)\s+(\d+(?:\.\d+)?)\+?\s*(?:years?|yrs?)',
+            r'(\d+(?:\.\d+)?)\+?\s*(?:years?|yrs?)\s+of\s+[\w\s]{0,25}(?:development|engineering|architecture|administration)',
+            r'(\d+(?:\.\d+)?)\+?\s*(?:years?|yrs?)\s+(?:working\s+with|in\s+software|in\s+tech)'
+        ]
+        found_exp_vals = []
+        for pat in jd_exp_patterns:
+            matches = re.findall(pat, cleaned, re.IGNORECASE)
+            for m in matches:
+                try:
+                    val = float(m)
+                    if 0.5 <= val <= 25:
+                        found_exp_vals.append(val)
+                except ValueError:
+                    pass
+        if found_exp_vals:
+            min_exp_years = min(found_exp_vals)
 
         # 4. Required Education detection
-        highest_degree, _ = extract_education_from_text(cleaned)
-        required_edu = highest_degree if highest_degree != "Not detected" else "Bachelor's"
+        edu_header_match = re.search(r'Education(?:\s+Required)?:\s*([^\n]+)', cleaned, re.IGNORECASE)
+        required_edu = "Bachelor's"
+        if edu_header_match:
+            header_edu_text = edu_header_match.group(1).strip()
+            detected_from_header, _ = extract_education_from_text(header_edu_text)
+            if detected_from_header != "Not detected":
+                required_edu = detected_from_header
+            elif re.search(r'\bmaster\b', header_edu_text, re.IGNORECASE):
+                required_edu = "Master's"
+            elif re.search(r'\bph\.?d|doctorate\b', header_edu_text, re.IGNORECASE):
+                required_edu = "PhD"
+            elif re.search(r'\bbachelor\b', header_edu_text, re.IGNORECASE):
+                required_edu = "Bachelor's"
+            elif re.search(r'\bdiploma|associate\b', header_edu_text, re.IGNORECASE):
+                required_edu = "Diploma/Associate"
+            elif re.search(r'\bany\b', header_edu_text, re.IGNORECASE):
+                required_edu = "Any"
+        else:
+            highest_degree, _ = extract_education_from_text(cleaned)
+            required_edu = highest_degree if highest_degree != "Not detected" else "Bachelor's"
 
         # 5. Extract top keywords using TF-IDF
         keywords = NLPAnalyzer.extract_top_keywords(cleaned, top_n=12)
